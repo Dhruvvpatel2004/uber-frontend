@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Uber Clone</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #app {
+      width: 420px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      padding: 20px;
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background: #000;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #444;
+    }
+
+    .map-container {
+      margin: 15px 0;
+      height: 250px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none; 
+    }
+
+    .ride-card {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      text-align: left;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .ride-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .ride-card p {
+      margin: 3px 0;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .info {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const app = document.getElementById('app');
+
+    const locations = [
+      "Central Park", "Times Square", "Empire State",
+      "Wall Street", "Statue of Liberty", "Brooklyn Bridge",
+      "Harvard Square", "Union Station", "Golden Gate"
+    ];
+
+    function showLogin() {
+      app.innerHTML = `
+        <h1>Login as</h1>
+        <button onclick="showUser()">User</button>
+        <button onclick="showRider()">Rider</button>
+      `;
+    }
+
+    function mapEmbed() {
+      return `
+        <div class="map-container">
+          <iframe 
+            src="https://www.openstreetmap.org/export/embed.html?bbox=72.8258%2C18.9398%2C72.8358%2C18.9498&amp;layer=mapnik" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+        </div>
+      `;
+    }
+
+    function showUser() {
+      app.innerHTML = `
+        <h1>User Dashboard</h1>
+        ${mapEmbed()}
+        <button onclick="bookRide()">Book Ride</button>
+        <div class="info" id="userInfo"></div>
+        <button onclick="showLogin()">Logout</button>
+      `;
+    }
+
+    function showRider() {
+      app.innerHTML = `
+        <h1>Rider Dashboard</h1>
+        ${mapEmbed()}
+        <div id="rides"></div>
+        <button onclick="showLogin()">Logout</button>
+      `;
+
+      generateRideCards();
+    }
+
+    function bookRide() {
+      document.getElementById('userInfo').textContent = 
+        `✅ Ride booked! Driver is on the way.`;
+    }
+
+    function generateRideCards() {
+      const rideContainer = document.getElementById("rides");
+      rideContainer.innerHTML = "";
+      
+      for (let i = 0; i < 3; i++) { // show 3 random rides
+        let start = locations[Math.floor(Math.random() * locations.length)];
+        let end = locations[Math.floor(Math.random() * locations.length)];
+        while (end === start) {
+          end = locations[Math.floor(Math.random() * locations.length)];
+        }
+        let cost = (Math.random() * (50 - 10) + 10).toFixed(2);
+
+        const card = document.createElement("div");
+        card.classList.add("ride-card");
+        card.innerHTML = `
+          <h3>Ride Request</h3>
+          <p><strong>From:</strong> ${start}</p>
+          <p><strong>To:</strong> ${end}</p>
+          <p><strong>Cost:</strong> $${cost}</p>
+          <button onclick="acceptRide('${start}', '${end}', ${cost})">Accept Ride</button>
+        `;
+        rideContainer.appendChild(card);
+      }
+    }
+
+    function acceptRide(start, end, cost) {
+      alert(`🚖 Ride accepted!\nPickup: ${start}\nDrop: ${end}\nFare: $${cost}`);
+    }
+
+    // Load login first
+    showLogin();
+  </script>
+</body>
+</html>
